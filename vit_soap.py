@@ -25,7 +25,7 @@ except ImportError:
     exit(1)
 
 # Shampoo 옵티마이저 라이브러리 import
-from distributed_shampoo import (DistributedShampoo, DefaultEigenvalueCorrectedShampooConfig)
+from distributed_shampoo import (DistributedShampoo, DefaultEigenvalueCorrectedShampooConfig, DefaultSOAPConfig)
 
 # --- ViT 모델 코드 수정 ---
 
@@ -359,17 +359,13 @@ def train(args: argparse.Namespace):
         lr=args.base_lr,
         betas=(args.beta1, 0.99),
         epsilon=1e-8,
-        momentum=False,
+        momentum=0.0,
         weight_decay=args.weight_decay,
         max_preconditioner_dim=1024,
-        precondition_frequency=10,
-        use_normalized_grafting=False,
-        inv_root_override=2,
-        exponent_multiplier=1,
-        start_preconditioning_step=10,
-        use_nadam=False,
+        precondition_frequency=100,
+        start_preconditioning_step=100,
         use_decoupled_weight_decay=True,
-        preconditioner_config=DefaultEigenvalueCorrectedShampooConfig,
+        preconditioner_config=DefaultSOAPConfig,
     )
     
     start_epoch = 0
@@ -489,15 +485,15 @@ if __name__ == '__main__':
     parser.add_argument('--data-path', type=str, required=True, help='Path to cache Hugging Face datasets')
     parser.add_argument('--log-dir', type=str, default='logs', help='Directory for TensorBoard logs')
     parser.add_argument('--epochs', type=int, default=90, help='Number of training epochs')
-    parser.add_argument('--batch-size', type=int, default=256, help='Batch size per GPU')
+    parser.add_argument('--batch-size', type=int, default=128, help='Batch size per GPU')
     parser.add_argument('--workers', type=int, default=4, help='Number of data loading workers')
-    parser.add_argument('--log-interval', type=int, default=300, help='Logging frequency')
+    parser.add_argument('--log-interval', type=int, default=200, help='Logging frequency')
     parser.add_argument('--save-interval', type=int, default=10, help='Checkpoint saving frequency')
-    parser.add_argument('--base-lr', type=float, default=0.0013, help='Base learning rate')
-    parser.add_argument('--warmup-steps', type=int, default=6000, help='Number of warmup steps')
+    parser.add_argument('--base-lr', type=float, default=0.001, help='Base learning rate')
+    parser.add_argument('--warmup-steps', type=int, default=11268, help='Number of warmup steps')
     parser.add_argument('--mixup', type=float, default=0.2, help='Mixup alpha (default: 0.2). Set 0 to disable.')
     parser.add_argument('--label-smoothing', type=float, default=0.1, help='Label smoothing (default: 0.1)')
-    parser.add_argument('--weight-decay', type=float, default=0.0005, help='Weight decay (default: 0.1)')
+    parser.add_argument('--weight-decay', type=float, default=0.0001, help='Weight decay (default: 0.1)')
     parser.add_argument('--beta1', type=float, default=0.95, help='Beta1/Momentum (default: 0.9)')
     parser.add_argument('--save-dir', type=str, default='checkpoints', help='Directory for saving checkpoints')
     parser.add_argument('--resume', type=str, default=None, help='Path to checkpoint to resume from')
